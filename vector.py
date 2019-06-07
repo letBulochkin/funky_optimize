@@ -3,6 +3,13 @@ class Vektor(object):
 	def __init__(self, *args):
 		self.__vars__ = args
 
+	def __repr__(self):
+		responce = "Точка: ("
+		s = ", ".join(str(i) for i in self.__vars__)
+		responce = responce + s + ")"
+		return responce
+
+
 	def __add__(self, other):
 		if (type(other) is int) or (type(other) is float): 
 			self.__vars__ = [i+other for i in self.__vars__]
