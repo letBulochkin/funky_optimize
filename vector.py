@@ -4,7 +4,6 @@ class Vektor(object):
 		self.__vars__ = []
 		for i in args:
 			self.__vars__.append(i)
-		print(self.__vars__)
 
 	def __repr__(self):
 		responce = "Точка ("
@@ -33,8 +32,6 @@ class Vektor(object):
 		return Vektor(*self.__vars__)
 
 	def __truediv__(self, other):
-		print(self.__vars__)
-		print(type(other))
 		self.__vars__ = [i/other for i in self.__vars__]
 		return Vektor(*self.__vars__)
 
