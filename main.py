@@ -1,14 +1,10 @@
 from math import sqrt
+from inspect import getsource
 from vector import Vektor
-
-'''
-def evaluate(*args):
-	res = (args[0]**3)-(75*args[0])+(3*args[0]+args[1])**2
-	return res
-'''
 
 def evaluate(args):
 	res = (args[0]**3)-(75*args[0])+(3*args[0]+args[1])**2
+	#res = (args[0]**3)-18*(args[0]**2)-(39*args[0])+(3*args[0]+args[1])**2
 	return res
 
 '''
@@ -164,6 +160,7 @@ def nelder_mead(start_p, simplex_l, refl, shr, stch, iters):
 		count = count + 1
 		if (count==iters):
 			print("Условие окончания поиска выполнено. Окончание поиска.")
+			print(simplex[0][0], " Значение функции F = ", evaluate(simplex[0][0]))
 			break
 		else:
 			print("Условие окончания поиска не выполнено. Продолжаю поиск.")
@@ -226,12 +223,39 @@ def box_wilson(start_p, interval, prec):
 
 		if (sqrt(b1**2+b2**2) < prec):
 			print("Условие прекращение поиска выполнено. Прекращаю поиск.")
+			print(point, " Значение функции F = ", val)
 			break
 		else:
 			print("Условие прекращение поиска не выполнено. Продолжаю поиск.")
-	pass
 
 if __name__ == '__main__':
-	hook_jeeves(Vektor(20, 25), 2, 0.06)
-	nelder_mead(Vektor(20, 25), 2, 1, 0.5, 2, 10)
-	box_wilson(Vektor(20, 25), 1, 0.06)
+	print("Демонстрация методов оптимизации.")
+	print("Данная функция:")
+	print(getsource(evaluate).split('\n')[1])
+
+	while True:
+		point = Vektor(*[int(i) for i in input("Введите координаты точки через запятую: ").split(',')])
+		print(point)
+		print("Каким методом оптимизировать?\n1. Хука и Дживса\n2. Нельдера-Мида\n3. Бокса-Уилсона")
+		choice = int(input("Ответ: "))
+		if (choice == 1):
+			d = float(input("Укажите приращение координат: "))  #2
+			p = float(input("Укажите точность: "))  #0.06
+			hook_jeeves(point, d, p)
+			if (int(input("Еще разок? 0/1: ")) == False):
+				break
+		elif (choice == 2):
+			l = float(input("Укажите длину стороны симплекса: "))  #2
+			r = float(input("Укажите коэффициент отражения: "))  #1
+			sh = float(input("Укажите коэффициент сжатия: "))  #0.5
+			st = float(input("Укажите коэффициент растяжения: ")) #2
+			p = float(input("Укажите точность: "))
+			nelder_mead(point, l, r, sh, st, 10)
+			if (int(input("Еще разок? 0/1: ")) == False):
+				break
+		elif (choice == 3):
+			trv = float(input("Укажите интервал приращения: "))  #1
+			p = float(input("Укажите точность: "))  #0.06
+			box_wilson(point, trv, p)
+			if (int(input("Еще разок? 0/1: ")) == False):
+				break
