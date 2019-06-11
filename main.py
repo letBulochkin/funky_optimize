@@ -1,3 +1,4 @@
+from math import sqrt
 from vector import Vektor
 
 '''
@@ -170,6 +171,70 @@ def nelder_mead(start_p, simplex_l, refl, shr, stch, iters):
 		else:
 			print("Условие окончания поиска не выполнено. Продолжаю поиск.")
 
+def box_wilson(start_p, interval, prec):
+	
+	print("Инициализирую метод Бокса-Уилсона.")
+	print("Шаг 0. Вычисление начальных значений...")
+
+	point = start_p
+	val = evaluate(point)
+
+	print(point, " Значение функции: ", val)
+
+	while True:
+		
+		print("Шаг 1. Вычисление матрицы плана эксперимента.")
+
+		plan_matrix = [[Vektor(point[0]-1*interval, point[1]-1*interval), None],
+						[Vektor(point[0]+1*interval, point[1]-1*interval), None],
+						[Vektor(point[0]-1*interval, point[1]+1*interval), None],
+						[Vektor(point[0]+1*interval, point[1]+1*interval), None]]
+
+		for i in range(len(plan_matrix)):
+			plan_matrix[i][1] = evaluate(plan_matrix[i][0])
+
+		print("Матрица плана:")
+		for i in plan_matrix:
+			print(i[0], " Значение функции: ", i[1])
+
+		print("Шаг 2. Вычисление коэффициентов уравнения регрессии.")
+		b1 = (-plan_matrix[0][1]+plan_matrix[1][1]-plan_matrix[2][1]+plan_matrix[3][1])/4
+		b2 = (-plan_matrix[0][1]-plan_matrix[1][1]+plan_matrix[2][1]+plan_matrix[3][1])/4
+		
+		print("Коэффициенты уравнения регрессии: b1 = {}, b2 = {}".format(b1, b2))
+
+		print("Шаг 3. Вычисление величины шага.")
+		hx1 = b1*0.01
+		hx2 = b2*0.01
+
+		print("Величина шага для координат: hx1 = {}, hx2 = {}".format(hx1, hx2))
+
+		print("Шаг 4. Начинаем движение по поверхности отклика.")
+		search_i = 0
+		while True:
+			temp_x = Vektor(point[0]-search_i*hx1, point[1]-search_i*hx2)
+			print("Итерация поиска №{}".format(search_i))
+			print(temp_x, "Значение функции:", evaluate(temp_x))
+			if (evaluate(temp_x) > val):
+				print("Значение функции в новой точке больше предыдущего. Прекращаю движение.")
+				break
+			elif (search_i > 10):
+				print("Достигнуто ограничение количества итераций поиска. Принудительный переход.")
+				break
+			else:
+				print("Значение функции в новой точке меньше предыдущего. Продолжаю движение.")
+				point = temp_x
+				val = evaluate(temp_x)
+				search_i += 1
+
+		if (sqrt(b1**2+b2**2) < prec):
+			print("Условие прекращение поиска выполнено. Прекращаю поиск.")
+			break
+		else:
+			print("Условие прекращение поиска не выполнено. Продолжаю поиск.")
+	pass
+
 if __name__ == '__main__':
 	#hook_jeeves([20, 25], 2, 0.06)
 	nelder_mead(Vektor(20, 25), 2, 1, 0.5, 2, 10)
+	box_wilson(Vektor(20, 25), 1, 0.06)
