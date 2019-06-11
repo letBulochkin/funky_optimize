@@ -35,6 +35,12 @@ class Vektor(object):
 		self.__vars__ = [i/other for i in self.__vars__]
 		return Vektor(*self.__vars__)
 
+	def __eq__(self, other):
+		for i in range(len(self.__vars__)):
+			if (self.__vars__[i] != other[i]):
+				return(False)
+		return(True)
+
 	def __getitem__(self, key):
 		return self.__vars__[key]
 
