@@ -92,7 +92,9 @@ def hook_jeeves(start_p, delta, prec):
 	print("Значение F = {} в точке ({}, {})".format(evaluate(*curr_p), curr_p[0], curr_p[1]))
 '''
 
-def nelder_mead(start_p, simplex_l, refl, shr, stch):
+def nelder_mead(start_p, simplex_l, refl, shr, stch, iters):
+
+	count = 0
 
 	print("Инициализирую метод Нельдера-Мида.")
 	print("Вычисление начального симплекса...")
@@ -106,6 +108,7 @@ def nelder_mead(start_p, simplex_l, refl, shr, stch):
 	#print("Значения в точках:\n", [i[1] for i in simplex])
 
 	while True:
+		#print("Начинаю итерацию ", count)
 		print("Шаг 0. Вычисление значений функции в точках начального симплекса.")
 		for i in range(len(simplex)):
 			simplex[i][1] = evaluate(simplex[i][0])
@@ -153,17 +156,20 @@ def nelder_mead(start_p, simplex_l, refl, shr, stch):
 				print("Точка xr лучше точки xe. Обновление точки w.")
 
 		if (evaluate(xr) > evaluate(simplex[1][0])):
-			xc = mid + (w-mid)*shr
+			xc = mid + (simplex[2][0]-mid)*shr
 			print("Шаг 4.1. Сжатие симплекса.")
-			print("Сжатие до ", xс, "=> xс")
+			print("Сжатие до ", xc, "=> xс")
 			if (evaluate(xc) < evaluate(simplex[2][0])):
 				simplex[2][0] = xc
 				print("Точка xc лучше худшей точки. Обновление точки w.")
 
-		break
-
-
+		count = count + 1
+		if (count==iters):
+			print("Условие окончания поиска выполнено. Окончание поиска.")
+			break
+		else:
+			print("Условие окончания поиска не выполнено. Продолжаю поиск.")
 
 if __name__ == '__main__':
 	#hook_jeeves([20, 25], 2, 0.06)
-	nelder_mead(Vektor(20, 25), 2, 0, 0, 0)
+	nelder_mead(Vektor(20, 25), 2, 1, 0.5, 2, 10)
