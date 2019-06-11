@@ -22,7 +22,7 @@ class Expression(object):
 		res = self.arguments[0]**3-75*self.arguments[0]+
 			(3*self.arguments[0]+self.arguments[1])**2 
 '''		
-'''
+
 def hook_jeeves(start_p, delta, prec):
 
 	print("Инициализирую метод Хука и Дживса.")
@@ -36,31 +36,31 @@ def hook_jeeves(start_p, delta, prec):
 			print("Приращение меньше требуемой точности.")
 			break
 
-		curr_res = evaluate(*curr_p)
+		curr_res = evaluate(curr_p)
 		print("Шаг 1. Значение F = {} в точке ({}, {})".format(curr_res, curr_p[0], curr_p[1]))
 
 		print("Шаг 2. Исследующий поиск по первой координате.")
 		
 		buff_p = curr_p
-		if (evaluate(curr_p[0]+delta, curr_p[1]) < curr_res):  # исследующий поиск по х
-			curr_res = evaluate(curr_p[0]+delta, curr_p[1])
-			curr_p = [curr_p[0]+delta, curr_p[1]]
+		if (evaluate(Vektor(curr_p[0]+delta, curr_p[1])) < curr_res):  # исследующий поиск по х
+			curr_p = Vektor(curr_p[0]+delta, curr_p[1])
+			curr_res = evaluate(curr_p)
 			print("Приращение первой координаты. Значение F = {} в точке ({}, {})".format(curr_res, curr_p[0], curr_p[1]))
-		elif (evaluate(curr_p[0]-delta, curr_p[1]) < curr_res):
-			curr_res = evaluate(curr_p[0]-delta, curr_p[1])
-			curr_p = [curr_p[0]-delta, curr_p[1]]
+		elif (evaluate(Vektor(curr_p[0]-delta, curr_p[1])) < curr_res):
+			curr_p = Vektor(curr_p[0]-delta, curr_p[1])
+			curr_res = evaluate(curr_p)
 			print("Уменьшение первой координаты. Значение F = {} в точке ({}, {})".format(curr_res, curr_p[0], curr_p[1]))
 		else:
 			print("Исследующий поиск результатов не дал.")
 
 		print("Шаг 3. Исследующий поиск по второй координате.")
-		if (evaluate(curr_p[0], curr_p[1]+delta) < curr_res):  # исследующий поиск по у
-			curr_res = evaluate(curr_p[0], curr_p[1]+delta)
-			curr_p = [curr_p[0], curr_p[1]+delta]
+		if (evaluate(Vektor(curr_p[0], curr_p[1]+delta)) < curr_res):  # исследующий поиск по у
+			curr_p = Vektor(curr_p[0], curr_p[1]+delta)
+			curr_res = evaluate(curr_p)
 			print("Приращение второй координаты. Значение F = {} в точке ({}, {})".format(curr_res, curr_p[0], curr_p[1]))
-		elif (evaluate(curr_p[0], curr_p[1]-delta) < curr_res):
-			curr_res = evaluate(curr_p[0], curr_p[1]-delta)
-			curr_p = [curr_p[0], curr_p[1]-delta]
+		elif (evaluate(Vektor(curr_p[0], curr_p[1]-delta)) < curr_res):
+			curr_p = Vektor(curr_p[0], curr_p[1]-delta)
+			curr_res = evaluate(curr_p)
 			print("Уменьшение второй координаты. Значение F = {} в точке ({}, {})".format(curr_res, curr_p[0], curr_p[1]))
 		else:
 			print("Исследующий поиск результатов не дал.")
@@ -73,12 +73,10 @@ def hook_jeeves(start_p, delta, prec):
 
 		print("Шаг 4. Поиск по образцу")
 		while True:  # поиск по образцу
-			next_p = []
-			next_p.append(2*curr_p[0] - prev_p[0])
-			next_p.append(2*curr_p[1] - prev_p[1])
+			next_p = Vektor(2*curr_p[0] - prev_p[0], 2*curr_p[1] - prev_p[1])
 			print("Следующая опорная точка по направлению ({},{})".format(next_p[0], next_p[1]))
-			if (evaluate(*next_p) < curr_res):
-				curr_res = evaluate(*next_p)
+			if (evaluate(next_p) < curr_res):
+				curr_res = evaluate(next_p)
 				prev_p = curr_p
 				curr_p = next_p
 				print("Значение F = {} в точке ({}, {})".format(curr_res, curr_p[0], curr_p[1]))
@@ -90,8 +88,7 @@ def hook_jeeves(start_p, delta, prec):
 		delta /= 2
 
 	print("Поиск окончен.")
-	print("Значение F = {} в точке ({}, {})".format(evaluate(*curr_p), curr_p[0], curr_p[1]))
-'''
+	print("Значение F = {} в точке ({}, {})".format(evaluate(curr_p), curr_p[0], curr_p[1]))
 
 def nelder_mead(start_p, simplex_l, refl, shr, stch, iters):
 
@@ -235,6 +232,6 @@ def box_wilson(start_p, interval, prec):
 	pass
 
 if __name__ == '__main__':
-	#hook_jeeves([20, 25], 2, 0.06)
+	hook_jeeves(Vektor(20, 25), 2, 0.06)
 	nelder_mead(Vektor(20, 25), 2, 1, 0.5, 2, 10)
 	box_wilson(Vektor(20, 25), 1, 0.06)
