@@ -17,7 +17,7 @@ class Expression(object):
 	def evaluate():
 		res = self.arguments[0]**3-75*self.arguments[0]+
 			(3*self.arguments[0]+self.arguments[1])**2 
-'''		
+'''
 
 def hook_jeeves(start_p, delta, prec):
 
@@ -27,7 +27,7 @@ def hook_jeeves(start_p, delta, prec):
 	curr_p = start_p
 
 	while True:
-		
+
 		if (delta < prec):
 			print("Приращение меньше требуемой точности.")
 			break
@@ -36,7 +36,7 @@ def hook_jeeves(start_p, delta, prec):
 		print("Шаг 1. Значение F = {} в точке ({}, {})".format(curr_res, curr_p[0], curr_p[1]))
 
 		print("Шаг 2. Исследующий поиск по первой координате.")
-		
+
 		buff_p = curr_p
 		if (evaluate(Vektor(curr_p[0]+delta, curr_p[1])) < curr_res):  # исследующий поиск по х
 			curr_p = Vektor(curr_p[0]+delta, curr_p[1])
@@ -92,8 +92,8 @@ def nelder_mead(start_p, simplex_l, refl, shr, stch, iters):
 
 	print("Инициализирую метод Нельдера-Мида.")
 	print("Вычисление начального симплекса...")
-	simplex = [[Vektor(start_p[0]-(simplex_l/2), start_p[1]-(simplex_l*0.29)), None], 
-				[Vektor(start_p[0]+(simplex_l/2), start_p[1]-(simplex_l*0.29)), None], 
+	simplex = [[Vektor(start_p[0]-(simplex_l/2), start_p[1]-(simplex_l*0.29)), None],
+				[Vektor(start_p[0]+(simplex_l/2), start_p[1]-(simplex_l*0.29)), None],
 				[Vektor(start_p[0], start_p[1]+(simplex_l*0.58)),None]]
 	for i in range(len(simplex)):
 		simplex[i][1] = evaluate(simplex[i][0])
@@ -166,7 +166,7 @@ def nelder_mead(start_p, simplex_l, refl, shr, stch, iters):
 			print("Условие окончания поиска не выполнено. Продолжаю поиск.")
 
 def box_wilson(start_p, interval, prec):
-	
+
 	print("Инициализирую метод Бокса-Уилсона.")
 	print("Шаг 0. Вычисление начальных значений...")
 
@@ -176,7 +176,7 @@ def box_wilson(start_p, interval, prec):
 	print(point, " Значение функции: ", val)
 
 	while True:
-		
+
 		print("Шаг 1. Вычисление матрицы плана эксперимента.")
 
 		plan_matrix = [[Vektor(point[0]-1*interval, point[1]-1*interval), None],
@@ -194,7 +194,7 @@ def box_wilson(start_p, interval, prec):
 		print("Шаг 2. Вычисление коэффициентов уравнения регрессии.")
 		b1 = (-plan_matrix[0][1]+plan_matrix[1][1]-plan_matrix[2][1]+plan_matrix[3][1])/4
 		b2 = (-plan_matrix[0][1]-plan_matrix[1][1]+plan_matrix[2][1]+plan_matrix[3][1])/4
-		
+
 		print("Коэффициенты уравнения регрессии: b1 = {}, b2 = {}".format(b1, b2))
 
 		print("Шаг 3. Вычисление величины шага.")
@@ -228,34 +228,64 @@ def box_wilson(start_p, interval, prec):
 		else:
 			print("Условие прекращение поиска не выполнено. Продолжаю поиск.")
 
+def floatTryParse(line_to_print):
+	value = input(line_to_print)
+	try:
+		return float(value)
+	except ValueError:
+		return floatTryParse(line_to_print)
+
+def intTryParse(line_to_print):
+	value = input(line_to_print)
+	try:
+		return int(value)
+	except ValueError:
+		return intTryParse(line_to_print)
+
 if __name__ == '__main__':
 	print("Демонстрация методов оптимизации.")
 	print("Данная функция:")
 	print(getsource(evaluate).split('\n')[1])
 
 	while True:
-		point = Vektor(*[int(i) for i in input("Введите координаты точки через запятую: ").split(',')])
+		args = input("Введите координаты точки через пробел: ").split(' ')
+		if 2 != len(args):
+			print("Необходимо скорректировать данные.")
+			continue
+		else:
+			for i in args:
+				if not i.isdigit():
+					print(i + " - должно быть числом")
+					continue
+
+		point = Vektor(*[int(i) for i in args])
 		print(point)
+
 		print("Каким методом оптимизировать?\n1. Хука и Дживса\n2. Нельдера-Мида\n3. Бокса-Уилсона")
-		choice = int(input("Ответ: "))
-		if (choice == 1):
-			d = float(input("Укажите приращение координат: "))  #2
-			p = float(input("Укажите точность: "))  #0.06
+		choice = intTryParse("Ответ: ")
+		while choice not in [1, 2, 3]:
+			print("Необходимо указать число в заданном диапазоне.")
+			choice = intTryParse("Ответ: ")
+
+		if choice == 1:
+			d = floatTryParse("Укажите приращение координат: ")  # 2
+			p = floatTryParse("Укажите точность: ") # 0.06
 			hook_jeeves(point, d, p)
-			if (int(input("Еще разок? 0/1: ")) == False):
-				break
-		elif (choice == 2):
-			l = float(input("Укажите длину стороны симплекса: "))  #2
-			r = float(input("Укажите коэффициент отражения: "))  #1
-			sh = float(input("Укажите коэффициент сжатия: "))  #0.5
-			st = float(input("Укажите коэффициент растяжения: ")) #2
-			p = float(input("Укажите точность: "))
+		elif choice == 2:
+			l = floatTryParse("Укажите длину стороны симплекса: ")  # 2
+			r = floatTryParse("Укажите коэффициент отражения: ")  # 1
+			sh = floatTryParse("Укажите коэффициент сжатия: ")  # 0.5
+			st = floatTryParse("Укажите коэффициент растяжения: ")  # 2
+			p = floatTryParse("Укажите точность: ")
 			nelder_mead(point, l, r, sh, st, 10)
-			if (int(input("Еще разок? 0/1: ")) == False):
-				break
-		elif (choice == 3):
-			trv = float(input("Укажите интервал приращения: "))  #1
-			p = float(input("Укажите точность: "))  #0.06
+		elif choice == 3:
+			trv = floatTryParse("Укажите интервал приращения: ")  # 1
+			p = floatTryParse("Укажите точность: ") # 0.06
 			box_wilson(point, trv, p)
-			if (int(input("Еще разок? 0/1: ")) == False):
-				break
+
+		again = intTryParse("Еще разок? 0/1: ")
+		while again not in [0, 1]:
+			again = intTryParse("Еще разок? 0/1: ")
+
+		if again == 0:
+			break
